@@ -1,24 +1,112 @@
+import socketIOClient from "socket.io-client"
+import React, { useState } from 'react';
+import { Component } from 'react';
 
-function HomePage() {
-    return <div>
-        <AppBar></AppBar>
-        <AppContent>
-            <Aside title="Players">
-                <List>
-                    <Player name="Player1"/>
-                    <Player name="Player2"/>
-                </List>
-            </Aside>
-            <Console />
-            <Aside title="Games">
-                <List>
-                    <Game name="Game1" player1="Player1" player2="Player2"/>
-                </List>
-            </Aside>
-        </AppContent>
-        <Footer />
-        <style jsx global>
-            {`
+class HomePage extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            newLog : undefined,
+            logs : [],
+
+            newPlayer : undefined,
+            players : [],
+        }
+
+        //const socket = socketIOClient("http://127.0.0.1:5000");
+        const socket = socketIOClient("https://safe-falls-95007.herokuapp.com/");
+
+        socket.on("oldLogs", (logs) => {
+            this.onClearArray()
+            for(let log of logs){
+                this.setState({newLog : log})
+                this.onAddItem()
+            }
+        })
+
+        socket.on("newLog", (log) => {
+            this.setState({newLog : log})
+            this.onAddItem()
+        })
+
+        socket.on("oldPlayers", (players) => {
+            this.ClearUsers()
+            for(let player of players){
+                this.setState({newPlayer : player})
+                this.onAddPlayer()
+            }
+        })
+
+        socket.on("newPlayer", (player) => {
+            this.setState({newPlayer : player})
+            this.onAddPlayer()
+        })
+
+    }
+    
+    onClearArray = () => {
+        this.setState({ logs: [] });
+      };
+
+      ClearUsers = () => {
+        this.setState({ players: [] });
+      }
+
+    onAddItem = () => {
+        this.setState(state => {
+          const logs = [...state.logs, state.newLog];
+          return {
+            logs,
+            newLog: undefined,
+          };
+        });
+      };
+
+      onAddPlayer = () => {
+        this.setState(state => {
+          const players = [...state.players, state.newPlayer];
+          return {
+            players,
+            newPlayer: undefined,
+          };
+        });
+      };
+
+    render() {
+
+        let logs = []
+        let players = []
+
+        for(let log of this.state.logs){
+            logs.push(<Log level={log.level} time="12.45" message={log.message} />)
+        }
+
+        for(let player of this.state.players){
+            players.push(<Player name={player.name} />)
+        }
+
+        return (<div>
+            <AppBar></AppBar>
+            <AppContent>
+                <Aside title="Players">
+                    <List>
+                        {players}
+                    </List>
+                </Aside>
+                <Console>
+                    <List>
+                        {logs}
+                    </List>
+                </Console>
+                <Aside title="Games">
+                    <List>
+                        <Game name="Game1" player1="Player1" player2="Player2" />
+                    </List>
+                </Aside>
+            </AppContent>
+            <Footer />
+            <style jsx global>
+                {`
                 html{
                     height : 100%;
                 }
@@ -37,11 +125,13 @@ function HomePage() {
                     height : 100%;
                 }
             `}
-        </style>
-    </div>
+            </style>
+        </div>
+        );
+    }
 }
 
-export default HomePage
+export default HomePage;
 
 function AppBar() {
     return <header>
@@ -107,7 +197,7 @@ function Aside(props) {
     </div>
 }
 
-const Player = (props) =>{
+const Player = (props) => {
     return <li>
         <span>{props.name}</span>
 
@@ -133,12 +223,12 @@ const Player = (props) =>{
     </li>
 }
 
-const Game = (props) =>{
+const Game = (props) => {
     return <li>
         <span>{props.name}</span>
 
         <style jsx>
-        {`
+            {`
             li{
                 margin : 0px;
                 height : 30px;
@@ -159,21 +249,11 @@ const Game = (props) =>{
     </li>
 }
 
-function Console() {
+function Console(props) {
     return <div className="console">
         <TitleBar title="Console" />
         <Container>
-            <List> 
-                <Log level="info" time="12.45" message="Server Started." />
-                <Log level="info" time="12.45" message="User logined." />
-                <Log level="info" time="12.45" message="User logined." />
-                <Log level="info" time="12.45" message="User logined." />
-                <Log level="info" time="12.45" message="User logined." />
-                <Log level="info" time="12.45" message="User logined." />
-                <Log level="info" time="12.45" message="User logined." />
-                <Log level="warn" time="12.46" message="Matchmaking some variables null." />
-                <Log level="err" time="12.47" message="Server Crashed." />
-            </List>
+            {props.children}
         </Container>
 
         <style jsx>
@@ -258,9 +338,9 @@ const Log = (props) => {
 
 const List = (props) => {
     return <ul>
-            {props.children}
-            <style jsx>
-                {`
+        {props.children}
+        <style jsx>
+            {`
                
                 ul{
                     overflow-y: scroll;
@@ -271,8 +351,8 @@ const List = (props) => {
                     margin : 0px;
                 } 
             `}
-            </style>
-        </ul>
+        </style>
+    </ul>
 }
 
 const Footer = () => {
@@ -341,3 +421,4 @@ const Container = (props) => {
         </style>
     </div>
 }
+
