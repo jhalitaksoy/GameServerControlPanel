@@ -33,7 +33,7 @@ export const RoundButton = (props) => {
         color : 'white',
         fontSize : 12,
     };
-    return <input type="button" style={style} value={props.text}>
+    return <input type="button" style={style} value={props.text} onClick={props.click}>
 
     </input>
 }

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button } from "./Button";
-export const Footer = () => {
+export const Footer = (props) => {
     return <footer>
         <ToolBar>
-            <Button text="Reset Server" />
+            <Button text="Reset Server" click={props.onReset}/>
         </ToolBar>
         <style jsx>
             {`

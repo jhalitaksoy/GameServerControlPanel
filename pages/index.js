@@ -15,6 +15,9 @@ import TitleBar from "./components/TitleBar";
 import Container from "./components/Container";
 import {BottomPanel, RoundButton} from './components/BottomPanel'
 
+const socket = socketIOClient("http://127.0.0.1:5000");
+//const socket = socketIOClient("https://safe-falls-95007.herokuapp.com/");
+
 class HomePage extends Component {
     constructor(props) {
         super(props);
@@ -25,9 +28,6 @@ class HomePage extends Component {
             newPlayer: undefined,
             players: [],
         }
-
-        const socket = socketIOClient("http://127.0.0.1:5000");
-        //const socket = socketIOClient("https://safe-falls-95007.herokuapp.com/");
 
         socket.on("oldLogs", (logs) => {
             this.onClearArray()
@@ -53,6 +53,11 @@ class HomePage extends Component {
         socket.on("newPlayer", (player) => {
             this.setState({ newPlayer: player })
             this.onAddPlayer()
+        })
+
+        socket.on("onClear", (data)=>{
+            this.onClearArray()
+            this.ClearUsers()
         })
 
     }
@@ -85,6 +90,15 @@ class HomePage extends Component {
         });
     };
 
+    addPlayer(){
+        socket.emit("addPlayer", { })
+    }
+
+    serverReset(){
+        console.log("server reset")
+        socket.emit("reset", { })
+    }
+
     render() {
 
         let logs = []
@@ -94,9 +108,9 @@ class HomePage extends Component {
         for (let log of this.state.logs) {
             logs.push(<Log key={i++} level={log.level} time="12.45" message={log.message} />)
         }
-
+        let j = 0
         for (let player of this.state.players) {
-            players.push(<Player name={player.name} />)
+            players.push(<Player key={j++} name={player.name} />)
         }
 
         return (<div>
@@ -110,7 +124,7 @@ class HomePage extends Component {
                         </List>
                     </Container>
                     <BottomPanel>
-                        <RoundButton text="Add"/>
+                        <RoundButton text="Add" click={this.addPlayer}/>
                         <RoundButton text="Delete All"/>
                     </BottomPanel>
                 </Aside>
@@ -131,7 +145,7 @@ class HomePage extends Component {
                     </Container>
                 </Aside>
             </AppContent>
-            <Footer />
+            <Footer onReset={this.serverReset} />
 
             <style jsx global>
                 {`
