@@ -19,58 +19,37 @@ const socket = socketIOClient("http://127.0.0.1:5000");
 //const socket = socketIOClient("https://safe-falls-95007.herokuapp.com/");
 
 class HomePage extends Component {
+
     constructor(props) {
         super(props);
+
         this.state = {
             newLog: undefined,
             logs: [],
 
             newPlayer: undefined,
             players: [],
+
+            newGame: undefined,
+            games: [],
         }
 
-        socket.on("oldLogs", (logs) => {
-            this.onClearArray()
-            for (let log of logs) {
-                this.setState({ newLog: log })
-                this.onAddItem()
-            }
-        })
-
-        socket.on("newLog", (log) => {
-            this.setState({ newLog: log })
-            this.onAddItem()
-        })
-
-        socket.on("oldPlayers", (players) => {
-            this.ClearUsers()
-            for (let player of players) {
-                this.setState({ newPlayer: player })
-                this.onAddPlayer()
-            }
-        })
-
-        socket.on("newPlayer", (player) => {
-            this.setState({ newPlayer: player })
-            this.onAddPlayer()
-        })
-
-        socket.on("onClear", (data)=>{
-            this.onClearArray()
-            this.ClearUsers()
-        })
-
+        this.handleMessages()
     }
 
-    onClearArray = () => {
-        this.setState({ logs: [] });
+    clearLogs = () => {
+        this.setState({ logs: [] })
     };
 
-    ClearUsers = () => {
-        this.setState({ players: [] });
+    clearPlayers = () => {
+        this.setState({ players: [] })
     }
 
-    onAddItem = () => {
+    clearGames = () =>{
+        this.setState({games : []})
+    }
+
+    addLog = () => {
         this.setState(state => {
             const logs = [...state.logs, state.newLog];
             return {
@@ -80,7 +59,7 @@ class HomePage extends Component {
         });
     };
 
-    onAddPlayer = () => {
+    addPlayer = () => {
         this.setState(state => {
             const players = [...state.players, state.newPlayer];
             return {
@@ -90,27 +69,115 @@ class HomePage extends Component {
         });
     };
 
-    addPlayer(){
+    addGame = () => {
+        this.setState(state => {
+            const games = [...state.games, state.newGame];
+            return {
+                games,
+                newGame: undefined,
+            };
+        });
+    }
+
+    sendAddPlayerAction(){
         socket.emit("addPlayer", { })
     }
 
-    serverReset(){
-        console.log("server reset")
+    sendServerResetAction(){
         socket.emit("reset", { })
+    }
+
+    //handle server socket messages
+    handleMessages(){
+        
+        this.handleLogMessages()
+        
+        this.handlePlayerMessages()
+
+        this.handleGamesMessages()
+
+        this.handleOthers()
+    }
+
+    handleOthers() {
+        socket.on("reset", (data) => {
+            this.clearLogs();
+            this.clearPlayers();
+        });
+    }
+
+    handleGamesMessages = () => {
+
+        //add old games
+        socket.on("oldGames", (games) => {
+            this.clearGames();
+            for (let game of games) {
+                this.setState({ newGame: game });
+                this.addGame();
+            }
+        });
+
+        //add new game
+        socket.on("newGame", (game) => {
+            console.log(game)
+            this.setState({ newGame: game });
+            this.addGame();
+        });
+    }
+
+    handlePlayerMessages() {
+        socket.on("oldPlayers", (players) => {
+            this.clearPlayers();
+            for (let player of players) {
+                this.setState({ newPlayer: player });
+                this.addPlayer();
+            }
+        });
+        //add new player
+        socket.on("newPlayer", (player) => {
+            this.setState({ newPlayer: player });
+            this.addPlayer();
+        });
+    }
+
+    //handle log messages
+    handleLogMessages(){
+
+        //get old logs
+        socket.on("oldLogs", (logs) => {
+            this.clearLogs()
+            for (let log of logs) {
+                this.setState({ newLog: log })
+                this.addLog()
+            }
+        })
+
+        //add new log
+        socket.on("newLog", (log) => {
+            this.setState({ newLog: log })
+            this.addLog()
+        })
     }
 
     render() {
 
         let logs = []
         let players = []
+        let games = []
 
         let i = 0
         for (let log of this.state.logs) {
             logs.push(<Log key={i++} level={log.level} time="12.45" message={log.message} />)
         }
+
         let j = 0
         for (let player of this.state.players) {
             players.push(<Player key={j++} name={player.name} />)
+        }
+        
+        let k = 0
+        for (let game of this.state.games) {
+            games.push(<Game key={k++} name={game.name} player1={game.player1}  player2={game.player2}/>)
         }
 
         return (<div>
@@ -124,7 +191,7 @@ class HomePage extends Component {
                         </List>
                     </Container>
                     <BottomPanel>
-                        <RoundButton text="Add" click={this.addPlayer}/>
+                        <RoundButton text="Add" click={this.sendAddPlayerAction}/>
                         <RoundButton text="Delete All"/>
                     </BottomPanel>
                 </Aside>
@@ -140,12 +207,12 @@ class HomePage extends Component {
                     <TitleBar title="Games"></TitleBar>
                     <Container>
                         <List>
-                            <Game name="Game1" player1="Player1" player2="Player2" />
+                            {games}
                         </List>
                     </Container>
                 </Aside>
             </AppContent>
-            <Footer onReset={this.serverReset} />
+            <Footer onReset={this.sendServerResetAction} />
 
             <style jsx global>
                 {`
