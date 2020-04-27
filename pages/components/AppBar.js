@@ -1,5 +1,5 @@
 import React from 'react';
-function AppBar(props) {
+export default function AppBar(props) {
     return <header>
         <h3>{props.title}</h3>
         <style jsx>{`
@@ -22,4 +22,3 @@ function AppBar(props) {
     </header>;
 }
 
-export default AppBar

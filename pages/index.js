@@ -5,16 +5,16 @@ import { Component } from 'react';
 import List from "./components/List";
 import Console from "./components/Console";
 import Aside from './components/Aside'
-import { Footer } from "./components/Footer";
-import { Log } from "./components/Log";
-import { Game } from "./components/Game";
-import { Player } from "./components/Player";
-import { AppBar } from "./components/AppBar";
-import { AppContent } from "./components/AppContent";
+import Footer from "./components/Footer";
+import Log from "./components/Log";
+import Game from "./components/Game";
+import Player from "./components/Player";
+import AppBar from "./components/AppBar";
+import AppContent from "./components/AppContent";
 import TitleBar from "./components/TitleBar";
 import Container from "./components/Container";
 import { BottomPanel, RoundButton } from './components/BottomPanel'
-import { Button } from "./components/Button";
+import Button from "./components/Button";
 import Axios from "axios";
 
 //const socket = socketIOClient("http://127.0.0.1:5000");
