@@ -13,7 +13,9 @@ import { AppBar } from "./components/AppBar";
 import { AppContent } from "./components/AppContent";
 import TitleBar from "./components/TitleBar";
 import Container from "./components/Container";
-import {BottomPanel, RoundButton} from './components/BottomPanel'
+import { BottomPanel, RoundButton } from './components/BottomPanel'
+import { Button } from "./components/Button";
+import Axios from "axios";
 
 const socket = socketIOClient("http://127.0.0.1:5000");
 //const socket = socketIOClient("https://safe-falls-95007.herokuapp.com/");
@@ -35,6 +37,9 @@ class HomePage extends Component {
         }
 
         this.handleMessages()
+
+        this.sendMessage = this.sendMessage.bind(this)
+        this.getMessage = this.getMessage.bind(this)
     }
 
     clearLogs = () => {
@@ -45,8 +50,8 @@ class HomePage extends Component {
         this.setState({ players: [] })
     }
 
-    clearGames = () =>{
-        this.setState({games : []})
+    clearGames = () => {
+        this.setState({ games: [] })
     }
 
     addLog = () => {
@@ -79,19 +84,19 @@ class HomePage extends Component {
         });
     }
 
-    sendAddPlayerAction(){
-        socket.emit("addPlayer", { })
+    sendAddPlayerAction() {
+        socket.emit("addPlayer", {})
     }
 
-    sendServerResetAction(){
-        socket.emit("reset", { })
+    sendServerResetAction() {
+        socket.emit("reset", {})
     }
 
     //handle server socket messages
-    handleMessages(){
-        
+    handleMessages() {
+
         this.handleLogMessages()
-        
+
         this.handlePlayerMessages()
 
         this.handleGamesMessages()
@@ -103,6 +108,7 @@ class HomePage extends Component {
         socket.on("reset", (data) => {
             this.clearLogs();
             this.clearPlayers();
+            this.clearGames();
         });
     }
 
@@ -119,7 +125,6 @@ class HomePage extends Component {
 
         //add new game
         socket.on("newGame", (game) => {
-            console.log(game)
             this.setState({ newGame: game });
             this.addGame();
         });
@@ -141,7 +146,7 @@ class HomePage extends Component {
     }
 
     //handle log messages
-    handleLogMessages(){
+    handleLogMessages() {
 
         //get old logs
         socket.on("oldLogs", (logs) => {
@@ -174,10 +179,10 @@ class HomePage extends Component {
         for (let player of this.state.players) {
             players.push(<Player key={j++} name={player.name} />)
         }
-        
+
         let k = 0
         for (let game of this.state.games) {
-            games.push(<Game key={k++} name={game.name} player1={game.player1}  player2={game.player2}/>)
+            games.push(<Game key={k++} name={game.name} player1={game.player1Name} player2={game.player2Name} />)
         }
 
         return (<div>
@@ -190,10 +195,10 @@ class HomePage extends Component {
                             {players}
                         </List>
                     </Container>
-                    <BottomPanel>
-                        <RoundButton text="Add" click={this.sendAddPlayerAction}/>
-                        <RoundButton text="Delete All"/>
-                    </BottomPanel>
+                    {/* <BottomPanel>
+                        <RoundButton text="Add" click={this.sendAddPlayerAction} />
+                        <RoundButton text="Delete All" />
+                    </BottomPanel> */}
                 </Aside>
                 <Console>
                     <TitleBar title="Console"></TitleBar>
@@ -212,7 +217,11 @@ class HomePage extends Component {
                     </Container>
                 </Aside>
             </AppContent>
-            <Footer onReset={this.sendServerResetAction} />
+            <Footer >
+                <Button text="Reset Server" click={this.sendServerResetAction}/>
+                {/* <Button text="Send Message" click={this.sendMessage}></Button> */}
+                {/* <Button text="Get Message" click={this.getMessage}></Button> */}
+            </Footer>
 
             <style jsx global>
                 {`
@@ -237,6 +246,47 @@ class HomePage extends Component {
             </style>
         </div>
         );
+    }
+
+    sendMessage() {
+        const playerID = this.state.players[0].id
+        Axios.post(
+            'http://localhost:5000/sendMessages',
+            { 
+                id: playerID,
+                //localMessageCount : 0,
+                messages :[
+                    {
+                        type : "normal",
+                        content : "Normal Message"
+                    }
+                ] },
+            { headers: { 'Content-Type': 'application/json' } }
+        )
+        .then((response) =>{
+            console.log(response.data)
+        })
+    }
+
+    getMessage(){
+        const playerID = this.state.players[1].id
+        Axios.post(
+            'http://localhost:5000/getMessages',
+            { 
+                playerId : playerID,
+                localMessageCount : 1,
+                /*messages :[
+                    {
+                        type : "normal",
+                        content : "Normal Message"
+                    }
+                ] */
+            },
+            { headers: { 'Content-Type': 'application/json' } }
+        )
+        .then((response) =>{
+            console.log(response.data)
+        })
     }
 }
 

@@ -18,6 +18,11 @@ const Aside = (props)=> {
 
                     box-shadow: 0px 0px 10px 1px rgba(0,0,0,0.2);
                 }
+                @media screen and (max-width : 500px){
+                    div{
+                        margin : 5px;
+                    }
+                }
             `}
         </style>
     </div>

@@ -3,7 +3,7 @@ import { Button } from "./Button";
 export const Footer = (props) => {
     return <footer>
         <ToolBar>
-            <Button text="Reset Server" click={props.onReset}/>
+            {props.children}
         </ToolBar>
         <style jsx>
             {`
