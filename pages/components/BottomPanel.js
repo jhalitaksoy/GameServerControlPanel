@@ -1,5 +1,5 @@
 import React from 'react'
-export const BottomPanel = (props) => {
+const BottomPanel = (props) => {
     return <div>
         {props.children}
         <style jsx>
@@ -21,6 +21,8 @@ export const BottomPanel = (props) => {
         </style>
     </div>
 }
+
+export default BottomPanel
 
 export const RoundButton = (props) => {
     const style = {

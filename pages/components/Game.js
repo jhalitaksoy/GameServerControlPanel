@@ -1,5 +1,5 @@
 import React from 'react';
-export const Game = (props) => {
+const Game = (props) => {
     return <li>
         <span className="name">
             <strong>{props.name}</strong>
@@ -39,3 +39,5 @@ export const Game = (props) => {
         </style>
     </li>;
 };
+
+export default Game

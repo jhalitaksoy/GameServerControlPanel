@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-export const Log = (props) => {
+const Log = (props) => {
     let levelColor = "blue";
     let icon = faInfoCircle;
     if (props.level == "info") {
@@ -59,3 +59,5 @@ export const Log = (props) => {
         </style>
     </li>;
 };
+
+export default Log

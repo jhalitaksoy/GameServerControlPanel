@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "./Button";
-export const Footer = (props) => {
+const Footer = (props) => {
     return <footer>
         <ToolBar>
             {props.children}
@@ -25,9 +25,10 @@ export const Footer = (props) => {
                 }
             `}
         </style>
-    </footer>;
-};
+    </footer>
+}
 
+export default Footer
 
 const StatusPanel = (props) => { 
     return <div>

@@ -1,5 +1,5 @@
 import React from 'react';
-export const Player = (props) => {
+const Player = (props) => {
     return <li>
         <span>{props.name}</span>
 
@@ -24,3 +24,5 @@ export const Player = (props) => {
         </style>
     </li>;
 };
+
+export default Player

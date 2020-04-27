@@ -1,5 +1,5 @@
 import React from 'react';
-export function AppContent(props) {
+export default function AppContent(props) {
     return <div>
         {props.children}
         <style jsx>

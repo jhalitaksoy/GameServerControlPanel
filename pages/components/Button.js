@@ -1,5 +1,5 @@
 import React from 'react';
-export const Button = (props) => {
+const Button = (props) => {
     const style = {
         backgroundColor: 'transparent',
         border: 0,
@@ -8,3 +8,5 @@ export const Button = (props) => {
     };
     return <input style={style} type="button" value={props.text} onClick={props.click} />;
 };
+
+export default Button
