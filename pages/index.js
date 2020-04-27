@@ -17,8 +17,8 @@ import { BottomPanel, RoundButton } from './components/BottomPanel'
 import { Button } from "./components/Button";
 import Axios from "axios";
 
-const socket = socketIOClient("http://127.0.0.1:5000");
-//const socket = socketIOClient("https://safe-falls-95007.herokuapp.com/");
+//const socket = socketIOClient("http://127.0.0.1:5000");
+const socket = socketIOClient("https://safe-falls-95007.herokuapp.com/");
 
 class HomePage extends Component {
 
@@ -38,8 +38,8 @@ class HomePage extends Component {
 
         this.handleMessages()
 
-        this.sendMessage = this.sendMessage.bind(this)
-        this.getMessage = this.getMessage.bind(this)
+        // this.sendMessage = this.sendMessage.bind(this)
+        // this.getMessage = this.getMessage.bind(this)
     }
 
     clearLogs = () => {
@@ -247,7 +247,7 @@ class HomePage extends Component {
         </div>
         );
     }
-
+    /*
     sendMessage() {
         const playerID = this.state.players[0].id
         Axios.post(
@@ -280,14 +280,14 @@ class HomePage extends Component {
                         type : "normal",
                         content : "Normal Message"
                     }
-                ] */
+                ] 
             },
             { headers: { 'Content-Type': 'application/json' } }
         )
         .then((response) =>{
             console.log(response.data)
         })
-    }
+    }*/
 }
 
 export default HomePage;
